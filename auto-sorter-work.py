@@ -39,9 +39,16 @@ EXTENSION_MAP = {
 def extension(path: Path):
     target_dir=path
     for file in target_dir.iterdir():
-        if file.is_file():
+        if file.is_file() and not file.name.startswith('.'):
             category=EXTENSION_MAP.get(file.suffix, 'Others')
             print(f'{file.stem} -> {category}')
+            move_files (file.name, category, target_dir)
+            
+def move_files(file_name, category, target_dir):
+    file_path= Path(target_dir / file_name)
+    folder_path=Path(target_dir / category)
+    folder_path.mkdir(exist_ok=True)
+    shutil.move(str(file_path) , str(folder_path / file_name))
 
 
 #cli----------------------
