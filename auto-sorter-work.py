@@ -36,13 +36,19 @@ EXTENSION_MAP = {
 
 
 #core---------------------
-def extension(path: Path):
+def extension(path: Path , dryrun: bool):
     target_dir=path
+    file_found=False
     for file in target_dir.iterdir():
         if file.is_file() and not file.name.startswith('.'):
+            file_found=True
             category=EXTENSION_MAP.get(file.suffix, 'Others')
-            print(f'{file.stem} -> {category}')
+            if dryrun:
+                print(f'Move file "{file.name}" to folder {category}')
+                continue
             move_files (file.name, category, target_dir)
+    if not file_found:
+        print('No files to move in the target directory')
             
 def move_files(file_name, category, target_dir):
     file_path= Path(target_dir / file_name)
@@ -56,12 +62,13 @@ def cli_arguments():
     default_path=Path.home() / 'Downloads'
     parser=argparse.ArgumentParser(description='File auto sorter for the provided directory path')
     parser.add_argument('--path' , default=default_path , type=Path , help='Input file path')
+    parser.add_argument('--dryrun', action='store_true', help='Preview without moving files')
     return parser.parse_args()  
 
 
 def main():
     args=cli_arguments()
-    extension(args.path)
+    extension(args.path, args.dryrun)
     
 if __name__ == '__main__':
     main()
