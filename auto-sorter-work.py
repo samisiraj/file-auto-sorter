@@ -1,6 +1,7 @@
 import shutil 
 import argparse
 from pathlib import Path
+import logging
 
 EXTENSION_MAP = {
     # Images
@@ -34,30 +35,52 @@ EXTENSION_MAP = {
     ".toml": "Data", ".sql": "Data", ".db": "Data",
 }
 
+#--logging------------------
+LOG_FILE = Path.home() / "file_sorter.log"
 
-#core---------------------
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s  %(levelname)-8s  %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.FileHandler(LOG_FILE),
+        logging.StreamHandler(),
+    ],
+)
+log = logging.getLogger(__name__)
+
+
+#--core---------------------
 def extension(path: Path , dryrun: bool):
     target_dir=path
     file_found=False
+    mode = "DRY-RUN" if dryrun else "LIVE"
+    log.info(f"=== File Sorter [{mode}] started — watching: {target_dir} ===")
+    
     for file in target_dir.iterdir():
         if file.is_file() and not file.name.startswith('.'):
             file_found=True
             category=EXTENSION_MAP.get(file.suffix, 'Others')
             if dryrun:
-                print(f'Move file "{file.name}" to folder {category}')
+                log.info(f"[DRY-RUN] Would move: {file.name} → {category}/")
                 continue
             move_files (file.name, category, target_dir)
+            
     if not file_found:
-        print('No files to move in the target directory')
+        log.info('No files to move in the target directory')
             
 def move_files(file_name, category, target_dir):
     file_path= Path(target_dir / file_name)
     folder_path=Path(target_dir / category)
     folder_path.mkdir(exist_ok=True)
-    shutil.move(str(file_path) , str(folder_path / file_name))
+    try:
+        shutil.move(str(file_path), str(folder_path / file_name))
+        log.info(f"Moved: {file_name} → {category}/")
+    except Exception as e:
+        log.error(f"Failed to move {file_name}: {e}")
 
 
-#cli----------------------
+#--cli----------------------
 def cli_arguments():
     default_path=Path.home() / 'Downloads'
     parser=argparse.ArgumentParser(description='File auto sorter for the provided directory path')
