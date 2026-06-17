@@ -64,20 +64,28 @@ def extension(path: Path , dryrun: bool):
             if dryrun:
                 log.info(f"[DRY-RUN] Would move: {file.name} → {category}/")
                 continue
-            move_files (file.name, category, target_dir)
+            move_files (file, category, target_dir)
             
     if not file_found:
         log.info('No files to move in the target directory')
             
-def move_files(file_name, category, target_dir):
-    file_path= Path(target_dir / file_name)
-    folder_path=Path(target_dir / category)
+def move_files(file, category, target_dir):
+    folder_path=Path(target_dir / category) #/images
     folder_path.mkdir(exist_ok=True)
+    
+    dest=folder_path / file.name #/images/open
+    i=2
+    
+    while dest.exists():
+        new_name = f'{file.stem}_{i}{file.suffix}'
+        dest = folder_path / new_name #/images/open_2
+        i+=1
+    
     try:
-        shutil.move(str(file_path), str(folder_path / file_name))
-        log.info(f"Moved: {file_name} → {category}/")
+        shutil.move(str(file), str(dest))
+        log.info(f"Moved: {file.name} → {category}/{dest.name}")
     except Exception as e:
-        log.error(f"Failed to move {file_name}: {e}")
+        log.error(f"Failed to move {file.name}: {e}")
 
 
 #--cli----------------------
