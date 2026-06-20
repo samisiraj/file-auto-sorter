@@ -1,35 +1,35 @@
 # File Extension Auto-Sorter
 
-Automatically organizes files in a directory by type, running on a schedule via cron. Built with Python and Zsh.
+Automatically organizes files in a directory by type, running on a schedule via cron. Built with Python and .zsh.
 
 ## Project Structure
 
 ```
 auto-sorter/
 ├── auto-sorter-work.py   # Core logic — scans and moves files
-├── setup_sorter.sh       # Zsh script — cron management and CLI entry point
+├── auto-sorter-main.zsh       # Zsh script — cron management and CLI entry point
 └── README.md
 ```
 
 ## Quick Start
 
-```zsh
+```.zsh
 # Make the setup script executable
-chmod +x setup_sorter.sh
+chmod +x auto-sorter-main.zsh
 
 # Preview what would happen — no files are moved
-./setup_sorter.sh --dry-run
+./auto-sorter-main.zsh --dry-run
 
 # Run once immediately
-./setup_sorter.sh --run-now
+./auto-sorter-main.zsh --run-now
 
 # Install as an hourly cron job (default: ~/Downloads)
-./setup_sorter.sh
+./auto-sorter-main.zsh
 ```
 
 ## How It Works
 
-The Zsh script is the user-facing entry point. It handles cron installation, Python path resolution, and directory validation. The Python script handles all file operations.
+The .zsh script is the user-facing entry point. It handles cron installation, Python path resolution, and directory validation. The Python script handles all file operations.
 
 When run, the sorter scans the target directory (non-recursively) and moves each file into a category subfolder:
 
@@ -53,8 +53,8 @@ Duplicate filenames are handled automatically — if `photo.png` already exists 
 
 Running the script with no arguments:
 
-```zsh
-./setup_sorter.sh
+```.zsh
+./auto-sorter-main.zsh
 ```
 
 - Targets `~/Downloads` by default
@@ -64,8 +64,8 @@ Running the script with no arguments:
 
 Running with a custom directory:
 
-```zsh
-./setup_sorter.sh ~/Desktop
+```.zsh
+./auto-sorter-main.zsh ~/Desktop
 ```
 
 - Same behaviour, but the cron job targets `~/Desktop` instead
@@ -74,7 +74,7 @@ Running with a custom directory:
 
 Cron jobs are stored per-user on macOS. You can view yours at any time with:
 
-```zsh
+```.zsh
 crontab -l
 ```
 
@@ -88,27 +88,27 @@ This runs at the top of every hour. The `# auto-file-sorter` tag is how the scri
 
 ## If a Cron Job Already Exists
 
-Running `./setup_sorter.sh` when a job is already installed will remove the old entry and install a fresh one with the current path. You will never end up with duplicate entries.
+Running `./auto-sorter-main.zsh` when a job is already installed will remove the old entry and install a fresh one with the current path. You will never end up with duplicate entries.
 
 To check whether a job is currently installed:
 
-```zsh
-./setup_sorter.sh --status
+```.zsh
+./auto-sorter-main.zsh --status
 ```
 
 ## CLI Reference
 
 | Command | What it does |
 |---|---|
-| `./setup_sorter.sh` | Install hourly cron job for `~/Downloads` |
-| `./setup_sorter.sh ~/Desktop` | Install hourly cron job for a custom directory |
-| `./setup_sorter.sh --run-now` | Sort `~/Downloads` immediately, once |
-| `./setup_sorter.sh --run-now ~/Desktop` | Sort a custom directory immediately, once |
-| `./setup_sorter.sh --dry-run` | Preview what would move, without moving anything |
-| `./setup_sorter.sh --dry-run ~/Desktop` | Dry-run on a custom directory |
-| `./setup_sorter.sh --status` | Show current cron entry |
-| `./setup_sorter.sh --remove` | Remove the cron job |
-| `./setup_sorter.sh --help` | Show usage |
+| `./auto-sorter-main.zsh` | Install hourly cron job for `~/Downloads` |
+| `./auto-sorter-main.zsh ~/Desktop` | Install hourly cron job for a custom directory |
+| `./auto-sorter-main.zsh --run-now` | Sort `~/Downloads` immediately, once |
+| `./auto-sorter-main.zsh --run-now ~/Desktop` | Sort a custom directory immediately, once |
+| `./auto-sorter-main.zsh --dry-run` | Preview what would move, without moving anything |
+| `./auto-sorter-main.zsh --dry-run ~/Desktop` | Dry-run on a custom directory |
+| `./auto-sorter-main.zsh --status` | Show current cron entry |
+| `./auto-sorter-main.zsh --remove` | Remove the cron job |
+| `./auto-sorter-main.zsh --help` | Show usage |
 
 ## Extension Categories
 
@@ -118,7 +118,7 @@ To check whether a job is currently installed:
 | Videos | mp4, mkv, avi, mov, wmv, flv, webm |
 | Audio | mp3, wav, flac, aac, ogg, m4a |
 | Documents | pdf, doc, docx, xls, xlsx, ppt, pptx, txt, rtf, odt, csv, md |
-| Code | py, js, ts, html, css, cpp, c, java, sh, rs, go, rb, php, swift, kt |
+| Code | py, js, ts, html, css, cpp, c, java, .zsh, rs, go, rb, php, swift, kt |
 | Archives | zip, tar, gz, rar, 7z, bz2 |
 | Fonts | ttf, otf, woff, woff2 |
 | Data | json, xml, yaml, yml, toml, sql, db |
