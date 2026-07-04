@@ -66,13 +66,17 @@ def scan_dir(path: Path , dryrun: bool):
 
 
 def process_file(file, dryrun, target_dir):
-    category=EXTENSION_MAP.get(file.suffix, 'Others')
+    category=get_category(file)
     if dryrun:
         log.info(f"[DRY-RUN] Would move: {file.name} → {category}/")
         return
     move_files (file, category, target_dir)
     
-            
+          
+def get_category(file: str) -> str:
+    return EXTENSION_MAP.get(file.suffix, 'Others')
+
+  
 def move_files(file, category, target_dir):
     folder_path=Path(target_dir / category) #/images
     folder_path.mkdir(exist_ok=True)
