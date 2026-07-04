@@ -51,7 +51,7 @@ log = logging.getLogger(__name__)
 
 
 #--core---------------------
-def extension(path: Path , dryrun: bool):
+def scan_dir(path: Path , dryrun: bool):
     target_dir=path
     file_found=False
     mode = "DRY-RUN" if dryrun else "LIVE"
@@ -60,14 +60,18 @@ def extension(path: Path , dryrun: bool):
     for file in target_dir.iterdir():
         if file.is_file() and not file.name.startswith('.'):
             file_found=True
-            category=EXTENSION_MAP.get(file.suffix, 'Others')
-            if dryrun:
-                log.info(f"[DRY-RUN] Would move: {file.name} → {category}/")
-                continue
-            move_files (file, category, target_dir)
-            
+            process_file(file, dryrun, target_dir)
     if not file_found:
         log.info('No files to move in the target directory')
+
+
+def process_file(file, dryrun, target_dir):
+    category=EXTENSION_MAP.get(file.suffix, 'Others')
+    if dryrun:
+        log.info(f"[DRY-RUN] Would move: {file.name} → {category}/")
+        return
+    move_files (file, category, target_dir)
+    
             
 def move_files(file, category, target_dir):
     folder_path=Path(target_dir / category) #/images
@@ -99,7 +103,7 @@ def cli_arguments():
 
 def main():
     args=cli_arguments()
-    extension(args.path, args.dryrun)
+    scan_dir(args.path, args.dryrun)
     
 if __name__ == '__main__':
     main()
